@@ -5,7 +5,7 @@
     public double Height { get; protected set; }
     public double Weight { get; protected set; }
     public double Depth { get; protected set; }
-    public double MaxLoad { get; protected set; }
+    public double MaxLoad { get; set; }
 
     public abstract void Load(double mass);
     public abstract void Unload();
@@ -155,5 +155,52 @@ public class OverfillException : Exception
 {
     public OverfillException(string message) : base(message)
     {
+    }
+}
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Create containers
+        var liquidContainer = new LiquidContainer { IsHazardous = false, MaxLoad = 1000 };
+        var gasContainer = new GasContainer { Pressure = 1.0, MaxLoad = 2000 };
+        var refrigeratedContainer = new RefrigeratedContainer { ProductType = "Bananas", Temperature = 13.3, MaxLoad = 1500 };
+
+        // Load containers
+        try
+        {
+            liquidContainer.Load(900);
+            gasContainer.Load(1900);
+            refrigeratedContainer.Load(1400);
+        }
+        catch (OverfillException ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        // Create ship
+        var ship = new Ship { MaxSpeed = 20, MaxContainerCount = 2, MaxWeight = 3 };
+
+        // Load containers onto ship
+        try
+        {
+            ship.LoadContainer(liquidContainer);
+            ship.LoadContainer(gasContainer);
+            ship.LoadContainer(refrigeratedContainer);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        // Unload a container from the ship
+        try
+        {
+            ship.UnloadContainer(liquidContainer.SerialNumber);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 }
